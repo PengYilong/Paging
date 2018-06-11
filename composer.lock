@@ -1,0 +1,59 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "1bf797c8e268a471c30941e71753f5a9",
+    "packages": [],
+    "packages-dev": [
+        {
+            "name": "nezumi/mysql",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PengYilong/PHP-MySQL.git",
+                "reference": "a8b514d3232f7d9273d4bbf0503dbb7eafb0ac2a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PengYilong/PHP-MySQL/zipball/a8b514d3232f7d9273d4bbf0503dbb7eafb0ac2a",
+                "reference": "a8b514d3232f7d9273d4bbf0503dbb7eafb0ac2a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Nezumi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Yilong Peng",
+                    "email": "948800401@qq.com",
+                    "homepage": "https://github.com/YilongPeng",
+                    "role": "Developer"
+                }
+            ],
+            "description": "the database driver",
+            "time": "2018-06-07T10:44:58+00:00"
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "nezumi/mysql": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.4"
+    },
+    "platform-dev": {
+        "php": ">=5.4"
+    }
+}

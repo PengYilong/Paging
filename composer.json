@@ -1,0 +1,24 @@
+{
+    "name": "nezumi/paging",
+    "description": "page of php",
+    "require": {
+		"php": ">=5.4"
+    },
+    "authors": [
+        {
+            "name": "Yilong Peng",
+            "homepage": "https://github.com/PengYilong",
+            "email": "948800401@qq.com",
+            "role": "Developer"
+        }
+    ],
+    "require-dev":{
+        "php": ">=5.4",
+        "nezumi/mysql": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nezumi\\": "src/"
+        }
+    }
+}
