@@ -1,6 +1,6 @@
 {
     "name": "nezumi/paging",
-    "description": "page of php",
+    "description": "paging of php",
     "require": {
 		"php": ">=5.4"
     },

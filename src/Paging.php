@@ -4,10 +4,11 @@ namespace Nezumi;
 
 class Paging
 {
+
     /**
-     * @var
+     * @var int display records of per page
      */
-    protected $pagesize;           //每页显示多少条记录
+    protected $pagesize;  
 
     /**
      * @var current page
@@ -25,7 +26,7 @@ class Paging
     protected $t_page;
 
     /**
-     * @var
+     * @var string
      */
     public $url;
 
@@ -39,14 +40,57 @@ class Paging
      */
     protected $page_listnum = 6;     //显示列表页数
 
-    public function __construct($total_records, $pagesize = 8, $pa = '')
+    /**
+     * @var string
+     */
+    protected $file;
+
+    /**
+     * @var string
+     */
+    protected $go_page_file;
+
+    /**
+     * @var string 
+     */
+    public $page_name = 'p';
+
+    /**
+     * @var string 
+     */
+    public $first_symbol = '首页';
+
+    /**
+     * @var string 
+     */
+    public $last_symbol = '尾页';
+
+    /**
+     * @var string
+     */
+    public $prev_symbol = '«';
+
+    /**
+     * @var string
+     */
+    public $next_symbol = '»';
+
+
+
+    public function __construct($file, $go_page_file)
     {
-        $this->page = isset($_GET['page']) ? $_GET['page'] : 1;
+        $this->file = $file;
+        $this->go_page_file = $go_page_file;
+    }
+
+    public function init($total_records, $pagesize = 8, $param = '')
+    {
+        $this->page =  isset($_GET[$this->page_name]) ? $_GET[$this->page_name]: 1;
         $this->pagesize = $pagesize;
         $this->limit = $this->set_limit();
         $this->total_records = $total_records;
-        $this->url = $this->get_url($pa);
-        $this->t_page = ceil($this->total_records / $this->pagesize);
+        $this->url = $this->get_url($param);
+        $this->t_page = ceil($this->total_records / $this->pagesize);     
     }
 
     public function set_limit()
@@ -54,19 +98,23 @@ class Paging
         return ($this->page - 1) * $this->pagesize.','.$this->pagesize;
     }
 
-    //解析地址并将多于的page去掉
-    protected function get_url($pa)
+    /**
+     * parse url and strip redundance page 
+     * 
+     */
+    protected function get_url($param)
     {
-        $url = $_SERVER['REQUEST_URI'].(strpos($_SERVER['REQUEST_URI'], '?') ? '' : '?').$pa;
-        $parse_url = parse_url($url);
-        if (isset($parse_url['query'])) {
+        if( empty($_SERVER['QUERY_STRING']) && empty($param) ){
+            $url = $_SERVER['REQUEST_URI'].'?';
+        } else {
+            $url = $_SERVER['REQUEST_URI'].$param;
+            $parse_url = parse_url($url);
             parse_str($parse_url['query'], $parse_arr);
-            if (isset($parse_arr['page'])) {
-                unset($parse_arr['page']);
+            if (isset($parse_arr[$this->page_name])) {
+                unset($parse_arr[$this->page_name]);
             }
-            $url = $parse_url['path'].'?'.http_build_query($parse_arr);
-        }
-
+            $url = $parse_url['path'].'?'.http_build_query($parse_arr).'&';
+         }
         return $url;
     }
 
@@ -75,8 +123,7 @@ class Paging
      */
     protected function first()
     {
-        $html = "<a href='{$this->url}&page=1'>首页</a>&nbsp;&nbsp;";
-
+        $html = '<a href="'.$this->url.$this->page_name.'=1">'.$this->first_symbol.'</a>';
         return $html;
     }
 
@@ -86,8 +133,7 @@ class Paging
      */
     protected function last()
     {
-        $html = "<a href='{$this->url}&page=$this->t_page'>尾页</a>&nbsp;&nbsp;";
-
+        $html = '<a href="'.$this->url.$this->page_name.'='.$this->t_page.'">'.$this->last_symbol.'</a>';
         return $html;
     }
 
@@ -97,8 +143,11 @@ class Paging
      */
     protected function prev()
     {
-        $html = "<a href='{$this->url}&page=".($this->page > 1 ? $this->page - 1 : $this->page)."'>上一页</a>&nbsp;&nbsp;";
-
+        if( $this->page > 1 ){
+            $html = '<a href="'.$this->url.$this->page_name.'='.($this->page -1 ).'">'.$this->prev_symbol.'</a>';
+        } else {
+            $html = '<span >'.$this->prev_symbol.'</span>';
+        }
         return $html;
     }
 
@@ -108,8 +157,12 @@ class Paging
      */
     public function next()
     {
-        $html = "<a href='{$this->url}&page=".($this->page + 1 < $this->t_page ? $this->page + 1 : $this->t_page)."'>下一页</a>&nbsp;&nbsp;";
-
+        if( $this->page >= $this->t_page ){
+            $html = '<span >'.$this->next_symbol.'</span>';
+        } else {
+            $html = '<a href="'.$this->url.$this->page_name.'='.($this->page + 1 < $this->t_page ? $this->page + 1 : $this->t_page).'" >'.$this->next_symbol.'</a>';
+        }
+        
         return $html;
     }
 
@@ -123,47 +176,78 @@ class Paging
             if ($page <= 0) {
                 continue;
             }
-            $link_page .= " <a href='{$this->url}&page={$page}'>$page</a> ";
+            $link_page .=  '<a href="'.$this->url.$this->page_name.'='.$page.'" >'.$page.'</a> ';
         }
-        $link_page .= " $this->page ";
+        $link_page .= '<span class="current">'.$this->page.'</span>';
         for ($i = 1; $i <= $page_cur; ++$i) {
             $page = $this->page + $i;
             if ($page > $this->t_page) {
                 break;
             }
-            $link_page .= " <a href='{$this->url}&page={$page}'>$page</a> ";
+            $link_page .= ' <a href="'.$this->url.$this->page_name.'='.$page.'">'.$page.'</a> ';
         }
 
         return $link_page;
     }
 
     /**
-     * 跳转页面,按回车键去跳转，或者按GO,都是通过location实现的.
+     * go to page via press Enter or go
      */
-    protected function go_page()
+    public function go_page()
     {
-        $html = "&nbsp;&nbsp;&nbsp;到第<input class='go_page' type='text' onkeydown='javascript:if(event.keyCode==13){var gpage=(this.value>".$this->t_page.')?'.$this->t_page.":this.value;location=\"{$this->url}&page=\"+gpage+\"\";}'  value='{$this->page}' />页 &nbsp;<input class='go_page_sure' type='button' onclick='javascript:var gpage=(this.previousSibling.previousSibling.value>".$this->t_page.')?'.$this->t_page.":this.previousSibling.previousSibling.value;location=\"{$this->url}&page=\"+gpage+\"\";'  value='确定' />";
-
-        return $html;
+        if( !file_exists($this->go_page_file) ){
+            $this->error = $this->go_page_file.' doesn\'t exiset!';
+            return false;
+        } 
+        $html = [];
+        $html['t_page'] = $this->t_page;
+        $html['page_name'] = $this->page_name;
+        $html['url'] = $this->url;
+        $html['current'] = $this->page;
+        $str = $this->parsor($html, $this->go_page_file);
+        return $str;             
     }
 
-    public function fpage($fpagearr = ['total', 'current', 'first', 'last', 'prev', 'next', 'page_list', 'go_page'])
+    public function html()
     {
-        $fhtml = ''; 
-        $fhtml['total'] = '共'.$this->total_records.'条 &nbsp;';
-        $fhtml['current'] = '页次'.$this->page.'/'.$this->t_page.' &nbsp;';
-        $fhtml['epage'] = '每页'.($this->pagesize > $this->total_records ? $this->total_records : $this->pagesize).'条  ';
-        $fhtml['first'] = $this->first();
-        $fhtml['last'] = $this->last();
-        $fhtml['prev'] = $this->prev();
-        $fhtml['next'] = $this->next();
-        $fhtml['page_list'] = $this->page_list();
-        $fhtml['go_page'] = $this->go_page();
-        $fpage = '';
-        foreach ($fpagearr as $index) {
-            $fpage .= $fhtml[$index];
-        }
+        if( !file_exists($this->file) ){
+            $this->error = $this->file.' doesn\'t exiset!';
+            return false;
+        } 
+        $html = []; 
+        $html['t_page'] = $this->t_page;
+        $html['t_records'] = $this->total_records;
+        $html['current'] = $this->page;
+        $html['epage'] = ($this->pagesize > $this->total_records ? $this->total_records : $this->pagesize);
+        $html['first'] = $this->first();
+        $html['last'] = $this->last();
+        $html['prev'] = $this->prev();
+        $html['next'] = $this->next();
+        $html['page_list'] = $this->page_list();
+        $str = $this->parsor($html, $this->file);
+        return $str;
+    }
 
-        return $fpage;
+
+    protected function parsor($html, $file)
+    {
+        $str = file_get_contents($file);
+        $keys = array_keys($html);
+        array_walk($keys, [$this, 'add_special']);
+        $values = array_values($html);
+        //replace variables
+        $str = str_replace($keys, $values, $str);
+        return $str;
+    }
+
+    private function add_special(&$value)
+    {
+        $value = '{$'.$value.'}';
+        return $value;
+    }
+
+    public function get_errors()
+    {
+        return $this->error;
     }
 }

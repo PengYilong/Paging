@@ -1,0 +1,13 @@
+<script type="text/javascript">
+function go_page_button()
+{
+	var page = document.getElementById('pageInput');
+	var gpage = (page.value > {$t_page}) ? {$t_page} : page.value;
+	location.href = "{$url}&{$page_name}="+gpage;
+}
+</script>
+<input class='search-btn fr' type='button' onclick="go_page_button()"  value="确定" />
+<span class="l-btns">
+	<span>跳到</span>
+	<input class='pagenum' type='text' id="pageInput"   value='{$current}' />页 
+</span>
