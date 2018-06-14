@@ -17,7 +17,7 @@ $config = include './configs/database.php';
 $mysql = new MySQLi();
 $mysql->open($config['master']);
 
-$data = getList('p', 8, '*', 'people');
+$data = getList('p', 1, '*', 'people');
 echo $data['table'].'<br/>';
 echo $data['page'];
 

@@ -23,7 +23,7 @@ class Paging
     /**
      * @var total pages
      */
-    protected $t_page;
+    protected $total;
 
     /**
      * @var string
@@ -34,11 +34,7 @@ class Paging
      * @var
      */
     public $limit;
-
-    /**
-     * @var
-     */
-    protected $page_listnum = 6;     //显示列表页数
+ 
 
     /**
      * @var string
@@ -75,7 +71,10 @@ class Paging
      */
     public $next_symbol = '»';
 
-
+    /**
+     * @var int display page nums
+     */
+    public $page_listnum = 6;    
 
     public function __construct($file, $go_page_file)
     {
@@ -90,7 +89,7 @@ class Paging
         $this->limit = $this->set_limit();
         $this->total_records = $total_records;
         $this->url = $this->get_url($param);
-        $this->t_page = ceil($this->total_records / $this->pagesize);     
+        $this->total = ceil($this->total_records / $this->pagesize);     
     }
 
     public function set_limit()
@@ -138,7 +137,7 @@ class Paging
      */
     protected function last()
     {
-        $html = '<a href="'.$this->url.$this->page_name.'='.$this->t_page.'">'.$this->last_symbol.'</a>';
+        $html = '<a href="'.$this->url.$this->page_name.'='.$this->total.'">'.$this->last_symbol.'</a>';
         return $html;
     }
 
@@ -162,36 +161,47 @@ class Paging
      */
     public function next()
     {
-        if( $this->page >= $this->t_page ){
+        if( $this->page >= $this->total ){
             $html = '<span >'.$this->next_symbol.'</span>';
         } else {
-            $html = '<a href="'.$this->url.$this->page_name.'='.($this->page + 1 < $this->t_page ? $this->page + 1 : $this->t_page).'" >'.$this->next_symbol.'</a>';
+            $html = '<a href="'.$this->url.$this->page_name.'='.($this->page + 1 < $this->total ? $this->page + 1 : $this->total).'" >'.$this->next_symbol.'</a>';
         }
         
         return $html;
     }
 
-    //分页列表的数目等于(page_listnum/2)+1
+    /**
+     * display nums of paging
+     * page_offset = (page_listnum-1)/2
+     * 
+     */
     protected function page_list()
     {
         $link_page = '';
-        $page_cur = floor($this->page_listnum / 2);
-        for ($i = $page_cur; $i >= 1; --$i) {
+        $page_offset = ceil( ($this->page_listnum-1) / 2);
+        if( $this->page-$page_offset > 1 ){
+            $link_page .= '<span>...</span>';
+        }
+        for ($i = $page_offset; $i >= 1; $i--) {
             $page = $this->page - $i;
             if ($page <= 0) {
                 continue;
             }
             $link_page .=  '<a href="'.$this->url.$this->page_name.'='.$page.'" >'.$page.'</a> ';
         }
+
         $link_page .= '<span class="current">'.$this->page.'</span>';
-        for ($i = 1; $i <= $page_cur; ++$i) {
+
+        for ($i = 1; $i <= $page_offset; $i++) {
             $page = $this->page + $i;
-            if ($page > $this->t_page) {
+            if ($page > $this->total) {
                 break;
             }
             $link_page .= ' <a href="'.$this->url.$this->page_name.'='.$page.'">'.$page.'</a> ';
         }
-
+        if( $this->total-$this->page > $page_offset){
+            $link_page .= '<span>...</span>';
+        }        
         return $link_page;
     }
 
@@ -205,7 +215,7 @@ class Paging
             return false;
         } 
         $html = [];
-        $html['t_page'] = $this->t_page;
+        $html['t_page'] = $this->total;
         $html['page_name'] = $this->page_name;
         $html['url'] = $this->url;
         $html['current'] = $this->page;
@@ -220,7 +230,7 @@ class Paging
             return false;
         } 
         $html = []; 
-        $html['t_page'] = $this->t_page;
+        $html['total'] = $this->total;
         $html['t_records'] = $this->total_records;
         $html['current'] = $this->page;
         $html['epage'] = ($this->pagesize > $this->total_records ? $this->total_records : $this->pagesize);
