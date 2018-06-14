@@ -104,16 +104,21 @@ class Paging
      */
     protected function get_url($param)
     {
-        if( empty($_SERVER['QUERY_STRING']) && empty($param) ){
+        if( empty($_SERVER['QUERY_STRING']) && empty($param)  ){
             $url = $_SERVER['REQUEST_URI'].'?';
         } else {
             $url = $_SERVER['REQUEST_URI'].$param;
             $parse_url = parse_url($url);
             parse_str($parse_url['query'], $parse_arr);
-            if (isset($parse_arr[$this->page_name])) {
+            if (isset($parse_arr[$this->page_name]) ) {
                 unset($parse_arr[$this->page_name]);
             }
-            $url = $parse_url['path'].'?'.http_build_query($parse_arr).'&';
+            //only p
+            if( empty($parse_arr) ){
+                $url = $parse_url['path'].'?';
+            } else {
+                $url = $parse_url['path'].'?'.http_build_query($parse_arr).'&';
+            }
          }
         return $url;
     }

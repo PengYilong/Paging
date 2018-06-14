@@ -1,0 +1,19 @@
+body{overflow:visible;}
+body,ul,ol,dl,dt,dd,h1,h2,h3,h4,h5,h6,dd,p,input{margin:0px;padding:0px;}
+li{list-style-type:none;}
+img,input{border:0px;}
+/* clear float*/
+.clr:after{  
+    content:"";  
+    height:0px;  
+    visibility:hidden;  
+    display:block;  
+    clear:both;  
+}    
+.clr{  
+    zoom:1;  
+} 
+a{outline:none;}
+area{outline:none;}
+h1,h2,h3,h4,h5,h6{font-weight: 500;}
+
